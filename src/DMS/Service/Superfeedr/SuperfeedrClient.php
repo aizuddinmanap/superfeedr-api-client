@@ -19,11 +19,9 @@ class SuperfeedrClient extends \GuzzleHttp\Client
         $this->hubSecret = sha1($secret);
 
         $defaultConfig = [
-            'base_url' => 'https://push.superfeedr.com',
-            'defaults' => [
-                'auth'    => [$username, $password],
-                'debug' => fopen('php://output','w')
-            ]
+            'base_uri' => 'https://push.superfeedr.com',
+            'auth' => [$username, $password],
+            'debug' => fopen('php://output','w')
         ];
 
         parent::__construct(array_merge_recursive($defaultConfig, $config));
@@ -35,20 +33,19 @@ class SuperfeedrClient extends \GuzzleHttp\Client
      * @param string $format
      * @return \GuzzleHttp\Message\ResponseInterface
      */
-    public function subscribeFeed($feed, $callbackUrl, $format = 'ATOM')
+    public function subscribeFeed($feed, $callbackUrl, $format = 'json')
     {
         $options = [
-            'body' => [
-                'hub.mode'     => 'subscribe',
-                'hub.topic'    => $feed,
-                'hub.callback' => $callbackUrl,
-                'hub.secret'   => $this->hubSecret,
-                'format'   => $format,
+            'form_params' => [
+                'hub.mode'      => 'subscribe',
+                'hub.topic'     => $feed,
+                'hub.callback'  => $callbackUrl,
+                'hub.secret'    => $this->hubSecret,
+                'format'        => $format,
             ]
         ];
 
         return $this->post('/', $options);
-
     }
 
     /**
@@ -59,14 +56,14 @@ class SuperfeedrClient extends \GuzzleHttp\Client
     public function unsubscribeFeed($feed, $callbackUrl = null)
     {
         $options = [
-            'body' => [
+            'form_params' => [
                 'hub.mode'     => 'unsubscribe',
                 'hub.topic'    => $feed,
             ]
         ];
 
         if ($callbackUrl !== null) {
-            $options['body']['hub.callback'] = $callbackUrl;
+            $options['form_params']['hub.callback'] = $callbackUrl;
         }
 
         return $this->post('/', $options);
@@ -80,7 +77,7 @@ class SuperfeedrClient extends \GuzzleHttp\Client
     public function listFeeds($callbackUrl, $page = 1)
     {
         $options = [
-            'body' => [
+            'form_params' => [
                 'hub.mode'     => 'list',
                 'hub.callback' => $callbackUrl,
                 'page'         => $page
@@ -98,13 +95,14 @@ class SuperfeedrClient extends \GuzzleHttp\Client
     public function retrieveFeeds($feed, array $config = [])
     {
         $options = [
-            'body' => [
+            'form_params' => [
                 'hub.mode'     => 'retrieve',
                 'hub.topic'    => $feed,
+                'format' => 'json'
             ]
         ];
 
-        array_merge($options['body'], $config);
+        array_merge($options['form_params'], $config);
 
         return $this->get('/', $options);
     }

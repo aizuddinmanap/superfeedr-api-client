@@ -2,13 +2,17 @@
     "name": "dms/superfeedr-api-client",
     "description": "An API client for Superfeedr",
     "require": {
-        "guzzlehttp/guzzle": "~4"
+        "guzzlehttp/guzzle": "~6"
     },
     "license": "MIT",
     "authors": [
         {
             "name": "Rafael Dohms",
             "email": "rdohms@gmail.com"
+        },
+        {
+            "name": "Aizuddin Manap",
+            "email": "aizuddinmanap@gmail.com"
         }
     ],
 
